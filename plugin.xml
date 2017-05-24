@@ -53,5 +53,29 @@
          </menu>
       </menuContribution>
    </extension>
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="com.forexgame.application"
+            name="Forex Game">
+         <property
+               name="appName"
+               value="Forex Game">
+         </property>
+      </product>
+   </extension>
+   <extension
+         id="product1"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="com.forexgame.application"
+            name="Forex Game">
+         <property
+               name="appName"
+               value="Forex Game">
+         </property>
+      </product>
+   </extension>
 
 </plugin>

@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: RCP_Application
-Bundle-SymbolicName: Forex_Game;singleton:=true
+Bundle-SymbolicName: com.forexgame;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: forexgame.application.Activator
 Require-Bundle: org.eclipse.ui,
