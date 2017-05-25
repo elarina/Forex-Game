@@ -1,4 +1,4 @@
-package forexgame.application;
+package com.forexgame.ui.views;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;

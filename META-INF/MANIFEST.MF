@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: RCP_Application
 Bundle-SymbolicName: com.forexgame;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-Activator: forexgame.application.Activator
+Bundle-Activator: com.forexgame.application.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

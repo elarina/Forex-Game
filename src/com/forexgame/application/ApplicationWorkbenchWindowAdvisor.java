@@ -1,4 +1,4 @@
-package forexgame.application;
+package com.forexgame.application;
 
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;

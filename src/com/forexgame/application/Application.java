@@ -1,4 +1,4 @@
-package forexgame.application;
+package com.forexgame.application;
 
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;

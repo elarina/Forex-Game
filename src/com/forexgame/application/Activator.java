@@ -1,4 +1,4 @@
-package forexgame.application;
+package com.forexgame.application;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;

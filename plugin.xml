@@ -7,7 +7,7 @@
          point="org.eclipse.core.runtime.applications">
       <application>
          <run
-               class="forexgame.application.Application">
+               class="com.forexgame.application.Application">
          </run>
       </application>
    </extension>
@@ -15,28 +15,89 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             name="Perspective"
-            class="forexgame.application.Perspective"
-            id="forexgame.application.Perspective">
+            class="com.forexgame.ui.Perspective"
+            id="com.forexgame.ui.Perspective">
       </perspective>
    </extension>
    <extension
          point="org.eclipse.ui.views">
       <view
             name="View"
-            class="forexgame.application.View"
+            class="com.forexgame.ui.views.View"
             id="forexgame.application.View">
+      </view>
+      <view
+            class="com.forexgame.ui.views.InstrumentsView"
+            id="com.forexgame.ui.views.InstrumentsView"
+            name="Instruments">
+      </view>
+      <view
+            class="com.forexgame.ui.views.ChartView"
+            id="com.forexgame.ui.views.ChartView"
+            name="Chart"
+            restorable="true">
+      </view>
+      <view
+            class="com.forexgame.ui.views.NewsCategoriesView"
+            id="com.forexgame.ui.views.NewsCategoriesView"
+            name="News Categories"
+            restorable="true">
+      </view>
+      <view
+            class="com.forexgame.ui.views.NewsView"
+            id="com.forexgame.ui.views.NewsView"
+            name="News"
+            restorable="true">
+      </view>
+      <view
+            class="com.forexgame.ui.views.TransactionsView"
+            id="com.forexgame.ui.views.TransactionsView"
+            name="Transactions"
+            restorable="true">
       </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
             targetID="*">
-         <view
+         <!--view
                standalone="true"
+               icon="icons/alt_window_16.png"
                minimized="false"
                relative="org.eclipse.ui.editorss"
                relationship="left"
                id="forexgame.application.View">
+         </view-->
+         <view
+               visible="true"
+               id="com.forexgame.ui.ChartView"
+               minimized="false"
+               relative="org.eclipse.ui.editorss"
+               relationship="left">
+         </view>
+         <view
+               id="com.forexgame.ui.InstrumentsView"
+               minimized="false"
+               relative="org.eclipse.ui.editorss"
+               relationship="left">
+         </view>
+         <view
+               id="com.forexgame.ui.NewsCategoriesView"
+               minimized="false"
+               relative="org.eclipse.ui.editorss"
+               relationship="left">
+         </view>
+         <view
+               id="com.forexgame.ui.NewsView"
+               minimized="false"
+               relative="org.eclipse.ui.editorss"
+               relationship="left">
+         </view>
+         <view
+               id="com.forexgame.ui.TransactionsView"
+               minimized="false"
+               relative="org.eclipse.ui.editorss"
+               relationship="left">
          </view>
       </perspectiveExtension>
    </extension>

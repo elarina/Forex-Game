@@ -1,9 +1,9 @@
-package forexgame.application;
+package com.forexgame.application;
 
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
-	private static final String BUNDLE_NAME = "forexgame.application.messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "com.forexgame.application.messages"; //$NON-NLS-1$
 	public static String ApplicationWorkbenchWindowAdvisor_rcp_application;
 	public static String View_One;
 	public static String View_Three;
