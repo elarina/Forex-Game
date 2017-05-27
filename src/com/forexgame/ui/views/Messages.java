@@ -4,6 +4,9 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "com.forexgame.ui.views.messages"; //$NON-NLS-1$
+	public static String NewsView_Date;
+	public static String NewsView_Heading;
+	public static String NewsView_Source;
 	public static String View_One;
 	public static String View_Three;
 	public static String View_Two;

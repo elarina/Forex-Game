@@ -18,8 +18,8 @@ public class Perspective implements IPerspectiveFactory {
 
 		layout.addView(InstrumentsView.ID, IPageLayout.TOP, 0.3f, IPageLayout.ID_EDITOR_AREA);
 		layout.addView(ChartView.ID, IPageLayout.RIGHT, 0.2f, InstrumentsView.ID);
-		layout.addView(NewsCategoriesView.ID, IPageLayout.BOTTOM, 0.6f, InstrumentsView.ID);
-		layout.addView(NewsView.ID, IPageLayout.BOTTOM, 0.6f, ChartView.ID);	
+		layout.addView(NewsCategoriesView.ID, IPageLayout.BOTTOM, 0.65f, InstrumentsView.ID);
+		layout.addView(NewsView.ID, IPageLayout.BOTTOM, 0.65f, ChartView.ID);	
 		layout.addView(TransactionsView.ID, IPageLayout.RIGHT, 0.7f, ChartView.ID);
 		
 		makeViewUncloseable(layout, InstrumentsView.ID);
