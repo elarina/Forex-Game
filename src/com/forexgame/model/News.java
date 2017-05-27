@@ -1,10 +1,20 @@
 package com.forexgame.model;
 
+import java.util.Date;
+
 public class News {
 	public String heading;
 	public String content;
-	public String date;
+	public Date date;
 	public String source;
+	
+	public News(String heading, String content, Date date, String source) {
+		super();
+		this.heading = heading;
+		this.content = content;
+		this.date = date;
+		this.source = source;
+	}
 	public String getHeading() {
 		return heading;
 	}
@@ -17,10 +27,10 @@ public class News {
 	public void setContent(String content) {
 		this.content = content;
 	}
-	public String getDate() {
+	public Date getDate() {
 		return date;
 	}
-	public void setDate(String date) {
+	public void setDate(Date date) {
 		this.date = date;
 	}
 	public String getSource() {
@@ -28,5 +38,10 @@ public class News {
 	}
 	public void setSource(String source) {
 		this.source = source;
+	}
+	
+	@Override
+	public String toString() {
+		return this.heading;
 	}
 }

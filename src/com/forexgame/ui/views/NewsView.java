@@ -1,26 +1,28 @@
 package com.forexgame.ui.views;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.part.ViewPart;
 
 import com.forexgame.application.Activator;
+import com.forexgame.controller.Controller;
 
 public class NewsView extends ViewPart {
 
 	public static final String ID = NewsView.class.getCanonicalName();
+	private TableViewer viewer;
 	
 	public NewsView() {
 		// TODO Auto-generated constructor stub
@@ -30,15 +32,12 @@ public class NewsView extends ViewPart {
 	public void createPartControl(Composite parent) {
 		Color whiteColor = Activator.getDefault().getWorkbench().getDisplay().getSystemColor(SWT.COLOR_WHITE);
 		parent.setBackground(whiteColor);
-		
-		TableViewer viewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
-		
-		TableLayout layout = new TableLayout();
-		layout.addColumnData(new ColumnWeightData(70, true));
-		layout.addColumnData(new ColumnWeightData(15, true));
-		layout.addColumnData(new ColumnWeightData(15, true));
-		
-		viewer.getTable().setLayout(layout);
+		createTable(parent);
+		viewer.setInput(Controller.INSTANCE.getNews());
+	 }
+	
+	private void createTable(Composite parent){
+		viewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
 		viewer.getTable().setLinesVisible(true);
 		viewer.getTable().setHeaderVisible(true);
 		
@@ -58,61 +57,54 @@ public class NewsView extends ViewPart {
 			
 			@Override
 			public Object[] getElements(Object inputElement) {
-				//return collection of news
-				return new Object[0];
+				List news = Controller.INSTANCE.getNews();
+				return news.toArray();
 			}
 		});
 		
-		viewer.setLabelProvider(new ITableLabelProvider() {
-			
+		createColumns(parent);
+	}
+	
+	private void createColumns(Composite parent) {
+		TableLayout layout = new TableLayout();
+		layout.addColumnData(new ColumnWeightData(90, true));
+		layout.addColumnData(new ColumnWeightData(15, true));
+		layout.addColumnData(new ColumnWeightData(30, true));
+		viewer.getTable().setLayout(layout);
+
+		TableViewerColumn column = createTableViewerColumn(Messages.NewsView_Heading);
+		column.setLabelProvider(new ColumnLabelProvider(){
 			@Override
-			public void removeListener(ILabelProviderListener listener) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public boolean isLabelProperty(Object element, String property) {
-				// TODO Auto-generated method stub
-				return false;
-			}
-			
-			@Override
-			public void dispose() {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void addListener(ILabelProviderListener listener) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public String getColumnText(Object element, int columnIndex) {
-				return element.toString();
-			}
-			
-			@Override
-			public Image getColumnImage(Object element, int columnIndex) {
-				// TODO Auto-generated method stub
-				return null;
+			public String getText(Object element) {
+				return Controller.INSTANCE.getNewsHeading(element);
 			}
 		});
 		
-		TableColumn headingColumn = new TableColumn(viewer.getTable(), SWT.CENTER);
-		headingColumn.setText(Messages.NewsView_Heading);
-		TableColumn sourceColumn = new TableColumn(viewer.getTable(), SWT.CENTER);
-		sourceColumn.setText(Messages.NewsView_Source);
-		TableColumn dateColumn = new TableColumn(viewer.getTable(), SWT.CENTER);
-		dateColumn.setText(Messages.NewsView_Date);
+		column = createTableViewerColumn(Messages.NewsView_Source);
+		column.setLabelProvider(new ColumnLabelProvider(){
+			@Override
+			public String getText(Object element) {
+				return Controller.INSTANCE.getNewsSource(element);
+			}
+		});
 		
-		viewer.setInput(new ArrayList<String>());
-	 }
-	
-	
-	
+		column = createTableViewerColumn(Messages.NewsView_Date);
+		column.setLabelProvider(new ColumnLabelProvider(){
+			@Override
+			public String getText(Object element) {
+				return Controller.INSTANCE.getNewsDate(element).toString();
+			}
+		});		
+	}
+
+	private TableViewerColumn createTableViewerColumn(String name) {
+		TableViewerColumn viewerColumn = new TableViewerColumn(viewer, SWT.CENTER);
+		TableColumn column = viewerColumn.getColumn();
+		column.setText(name);
+		column.setMoveable(true);
+		return viewerColumn;
+	}
+
 	@Override
 	public void setFocus() {
 		// TODO Auto-generated method stub
