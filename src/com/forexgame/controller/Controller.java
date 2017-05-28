@@ -47,6 +47,11 @@ public class Controller {
 	public Date getNewsDate(Object news){
 		return ((News)news).getDate();
 	}
+	
+	public String getNewsContent(Object news){
+		return ((News)news).getContent();
+	}
+	
 	public List<String> getSources(){
 		List<String> sources = new ArrayList<String>();
 		List<News> news = DummyNews.INSTANCE.getNews();

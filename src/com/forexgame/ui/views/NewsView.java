@@ -1,11 +1,14 @@
 package com.forexgame.ui.views;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -14,9 +17,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
-import com.forexgame.application.Activator;
 import com.forexgame.controller.Controller;
 
 public class NewsView extends ViewPart {
@@ -30,10 +36,33 @@ public class NewsView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		Color whiteColor = Activator.getDefault().getWorkbench().getDisplay().getSystemColor(SWT.COLOR_WHITE);
+		IWorkbench workbench = PlatformUI.getWorkbench();
+		Color whiteColor = workbench.getDisplay().getSystemColor(SWT.COLOR_WHITE);
 		parent.setBackground(whiteColor);
 		createTable(parent);
 		viewer.setInput(Controller.INSTANCE.getNews());
+		viewer.addDoubleClickListener(new IDoubleClickListener() {
+			
+			@Override
+			public void doubleClick(DoubleClickEvent event) {
+				ISelection selection = event.getSelection();
+				if(!(selection instanceof StructuredSelection)) return;
+				
+				Object object = ((StructuredSelection)selection).getFirstElement();
+				String newsHeading = Controller.INSTANCE.getNewsHeading(object);
+				String newsContent = Controller.INSTANCE.getNewsContent(object);
+				
+				try {
+					IViewPart view = workbench.getActiveWorkbenchWindow().getActivePage().showView(NewsContentView.ID);
+					IEditableView newsContentView = (IEditableView)view;
+					newsContentView.setTextContent(newsContent);
+					newsContentView.setName(newsHeading);
+				} catch (PartInitException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
 	 }
 	
 	private void createTable(Composite parent){

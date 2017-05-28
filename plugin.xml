@@ -55,6 +55,12 @@
             name="Transactions"
             restorable="true">
       </view>
+      <view
+            class="com.forexgame.ui.views.NewsContentView"
+            id="com.forexgame.ui.views.NewsContentView"
+            name="NewsContent"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">

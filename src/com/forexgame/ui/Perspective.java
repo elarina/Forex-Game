@@ -1,5 +1,6 @@
 package com.forexgame.ui;
 
+import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.IViewLayout;
@@ -7,6 +8,7 @@ import org.eclipse.ui.IViewLayout;
 import com.forexgame.ui.views.ChartView;
 import com.forexgame.ui.views.InstrumentsView;
 import com.forexgame.ui.views.NewsCategoriesView;
+import com.forexgame.ui.views.NewsContentView;
 import com.forexgame.ui.views.NewsView;
 import com.forexgame.ui.views.TransactionsView;
 
@@ -17,7 +19,10 @@ public class Perspective implements IPerspectiveFactory {
 		layout.setFixed(true);
 
 		layout.addView(InstrumentsView.ID, IPageLayout.TOP, 0.3f, IPageLayout.ID_EDITOR_AREA);
-		layout.addView(ChartView.ID, IPageLayout.RIGHT, 0.2f, InstrumentsView.ID);
+		IFolderLayout chartFolder = layout.createFolder("chart", IPageLayout.RIGHT, 0.2f, "instruments");
+		chartFolder.addView(ChartView.ID);
+		chartFolder.addPlaceholder(NewsContentView.ID);
+
 		layout.addView(NewsCategoriesView.ID, IPageLayout.BOTTOM, 0.65f, InstrumentsView.ID);
 		layout.addView(NewsView.ID, IPageLayout.BOTTOM, 0.65f, ChartView.ID);	
 		layout.addView(TransactionsView.ID, IPageLayout.RIGHT, 0.7f, ChartView.ID);
@@ -31,8 +36,6 @@ public class Perspective implements IPerspectiveFactory {
 //		IFolderLayout instrumentsFolder = layout.createFolder("instruments", IPageLayout.LEFT, 0.5f, editorArea);
 //		instrumentsFolder.addView(InstrumentsView.ID);
 //		
-//		IFolderLayout chartFolder = layout.createFolder("chart", IPageLayout.RIGHT, 0.2f, "instruments");
-//		chartFolder.addView(ChartView.ID);
 //		
 //		IFolderLayout transactionsFolder = layout.createFolder("transactions", IPageLayout.RIGHT, 0.7f, editorArea);
 //		transactionsFolder.addView(TransactionsView.ID);
