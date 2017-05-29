@@ -29,6 +29,7 @@ public class RSSFeedParser {
     static final String ITEM = "item";
     static final String PUB_DATE = "pubDate";
     static final String GUID = "guid";
+    static final String CREATOR = "creator";
 
     final URL url;
     
@@ -131,7 +132,10 @@ public class RSSFeedParser {
 				break;
 			case COPYRIGHT:
 				feed.setAuthor(getCharacterData(event, eventReader));
-			break;
+				break;
+			case CREATOR:
+				feed.setAuthor(getCharacterData(event, eventReader));
+				break;
 			case DESCRIPTION:
 				feed.setDescription(getCharacterData(event, eventReader));
 			break;

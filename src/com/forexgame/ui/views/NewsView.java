@@ -142,7 +142,7 @@ public class NewsView extends ViewPart {
 			}
 		});
 		
-		column = createTableViewerColumn(Messages.NewsView_Source);
+		column = createTableViewerColumn(Messages.NewsView_Author);
 		column.setLabelProvider(new ColumnLabelProvider(){
 			@Override
 			public String getText(Object element) {

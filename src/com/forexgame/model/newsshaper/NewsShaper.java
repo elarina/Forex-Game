@@ -3,7 +3,6 @@ package com.forexgame.model.newsshaper;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.forexgame.controller.Controller;
 import com.forexgame.model.News;
 import com.forexgame.rss.Feed;
 import com.forexgame.rss.RSSFeedParser;
@@ -31,8 +30,11 @@ public class NewsShaper {
 			
 			//set author
 			String author = feed.getAuthor();
+			String copyright = feed.getCopyright();
 			if(author != null) {
 				news.setAuthor(author);
+			} else if(copyright != null ){
+					news.setAuthor(copyright);
 			} else {
 				news.setAuthor(emptyString);
 			}
