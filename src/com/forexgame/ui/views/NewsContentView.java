@@ -1,7 +1,9 @@
 package com.forexgame.ui.views;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
@@ -12,6 +14,7 @@ public class NewsContentView extends ViewPart implements IEditableView {
 
 	public static final String ID = NewsContentView.class.getCanonicalName();
 	private Label label;
+	private Browser browser; 
 	
 	public NewsContentView() {
 
@@ -22,7 +25,9 @@ public class NewsContentView extends ViewPart implements IEditableView {
 		IWorkbench workbench = PlatformUI.getWorkbench();
 		Color whiteColor = workbench.getDisplay().getSystemColor(SWT.COLOR_WHITE);
 		parent.setBackground(whiteColor);
-		label = new Label(parent, SWT.CENTER);
+		browser = new Browser(parent, SWT.NONE);
+		FillLayout layout = new FillLayout();
+		browser.setLayoutData(layout);
 	}
 
 	@Override
@@ -33,7 +38,7 @@ public class NewsContentView extends ViewPart implements IEditableView {
 	
 	@Override
 	public void setTextContent(String content){
-		label.setText(content);
+		browser.setText(content);
 	}
 	
 	@Override
