@@ -4,10 +4,10 @@ import java.util.List;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
@@ -40,11 +40,11 @@ public class NewsView extends ViewPart {
 		Color whiteColor = workbench.getDisplay().getSystemColor(SWT.COLOR_WHITE);
 		parent.setBackground(whiteColor);
 		createTable(parent);
-		viewer.setInput(Controller.INSTANCE.getNews());
-		viewer.addDoubleClickListener(new IDoubleClickListener() {
+		viewer.setInput(Controller.INSTANCE.getNews());		
+		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			
 			@Override
-			public void doubleClick(DoubleClickEvent event) {
+			public void selectionChanged(SelectionChangedEvent event) {
 				ISelection selection = event.getSelection();
 				if(!(selection instanceof StructuredSelection)) return;
 				
@@ -61,6 +61,7 @@ public class NewsView extends ViewPart {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				
 			}
 		});
 	 }
