@@ -121,7 +121,7 @@ public class NewsView extends ViewPart {
 		column.setLabelProvider(new ColumnLabelProvider(){
 			@Override
 			public String getText(Object element) {
-				return Controller.INSTANCE.getNewsDate(element).toString();
+				return Controller.INSTANCE.getNewsDate(element);
 			}
 		});		
 	}

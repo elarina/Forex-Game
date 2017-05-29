@@ -1,10 +1,8 @@
 package com.forexgame.controller;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import com.forexgame.dummy.DummyNews;
 import com.forexgame.model.News;
 import com.forexgame.storage.FileDAOImpl;
 import com.forexgame.storage.GlobalStorage;
@@ -12,7 +10,7 @@ import com.forexgame.storage.Storage;
 
 public class Controller {
 	public static Controller INSTANCE = new Controller();
-	private Storage<News> storage = GlobalStorage.INSTANCE.getNewsStorage();
+	private Storage<News> newsStorage = GlobalStorage.INSTANCE.getNewsStorage();
 	
 	
 	private Controller(){
@@ -20,16 +18,17 @@ public class Controller {
 	}
 
 	private void initialize(){
-//		FileDAOImpl.INSTANCE.upload();
+		FileDAOImpl.INSTANCE.upload();
 	}
 	
 	public List<News> getNews() {
-		return DummyNews.INSTANCE.getNews();
+		List<News> newsList = newsStorage.getEntities();
+		return newsList;
 	}
 	
 	public List<String> getNewsHeadings(){
 		List<String> headings = new ArrayList<String>();
-		List<News> news = DummyNews.INSTANCE.getNews();
+		List<News> news = getNews();
 		for (News n : news) {
 			headings.add(n.getHeading());
 		}
@@ -41,10 +40,10 @@ public class Controller {
 	}
 	
 	public String getNewsSource(Object news){
-		return ((News)news).getSource();
+		return ((News)news).getAuthor();
 	}
 	
-	public Date getNewsDate(Object news){
+	public String getNewsDate(Object news){
 		return ((News)news).getDate();
 	}
 	
@@ -54,9 +53,9 @@ public class Controller {
 	
 	public List<String> getSources(){
 		List<String> sources = new ArrayList<String>();
-		List<News> news = DummyNews.INSTANCE.getNews();
+		List<News> news = getNews();
 		for (News n : news) {
-			sources.add(n.getSource());
+			sources.add(n.getAuthor());
 		}
 		return sources;
 
@@ -70,7 +69,7 @@ public class Controller {
 	private void delete(int[] indexes, int i, int removedCount) {
 		try{
 			while (i < indexes.length){
-				storage.getEntities().remove(indexes[i++] - removedCount++);
+				newsStorage.getEntities().remove(indexes[i++] - removedCount++);
 			}
 			if (removedCount > 0) FileDAOImpl.INSTANCE.save();
 		} catch(IndexOutOfBoundsException e) {
@@ -80,9 +79,9 @@ public class Controller {
 		
 	public void save (Object object, int oldId) {
 		if(oldId != -1) {
-			storage.getEntities().set(oldId, (News)object);
+			newsStorage.getEntities().set(oldId, (News)object);
 		} else {
-			storage.getEntities().add((News)object);
+			newsStorage.getEntities().add((News)object);
 		}
 		
 		FileDAOImpl.INSTANCE.save();
