@@ -68,9 +68,9 @@ public class FileDAOImpl implements FileDao {
 
 	private List<News> combine(List<News> oldNews, List<News> newNews) {
 		List<News> newsList = new ArrayList<News>();
-		newsList.addAll(oldNews); 
-		for (News news : newNews) {
-			if(!oldNews.contains(news)){
+		newsList.addAll(newNews); 
+		for (News news : oldNews) {
+			if(!newNews.contains(news)){
 				newsList.add(news);
 			}
 		}
