@@ -4,19 +4,23 @@ import java.util.List;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PartInitException;
@@ -40,32 +44,60 @@ public class NewsView extends ViewPart {
 		Color whiteColor = workbench.getDisplay().getSystemColor(SWT.COLOR_WHITE);
 		parent.setBackground(whiteColor);
 		createTable(parent);
-		viewer.setInput(Controller.INSTANCE.getNews());		
-		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+		viewer.setInput(Controller.INSTANCE.getNews());
+		addDoubleClickListener(workbench);
+		addKeyListener(workbench);
+	 }
+
+	private void addDoubleClickListener(IWorkbench workbench) {
+		viewer.addDoubleClickListener(new IDoubleClickListener() {
 			
 			@Override
-			public void selectionChanged(SelectionChangedEvent event) {
+			public void doubleClick(DoubleClickEvent event) {
 				ISelection selection = event.getSelection();
 				if(!(selection instanceof StructuredSelection)) return;
-				
 				Object object = ((StructuredSelection)selection).getFirstElement();
-				String newsHeading = Controller.INSTANCE.getNewsHeading(object);
-				String newsContent = Controller.INSTANCE.getNewsContent(object);
-				
-				try {
-					IViewPart view = workbench.getActiveWorkbenchWindow().getActivePage().showView(NewsContentView.ID);
-					IEditableView newsContentView = (IEditableView)view;
-					newsContentView.setTextContent(newsContent);
-					newsContentView.setName(newsHeading);
-				} catch (PartInitException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				showNewsContentView(workbench, object);
+			}
+
+		});
+	}
+
+	private void addKeyListener(IWorkbench workbench) {
+		viewer.getTable().addKeyListener(new KeyListener() {
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+				Table table = (Table)e.getSource();
+				TableItem[] selection = table.getSelection();
+				Object object = selection[0];
+				if(e.keyCode == SWT.LF){
+					showNewsContentView(workbench, object);
 				}
-				
+			}
+			
+			@Override
+			public void keyReleased(KeyEvent e) {
+				// TODO Auto-generated method stub
 			}
 		});
-	 }
-	
+	}
+
+	private void showNewsContentView(IWorkbench workbench, Object object) {
+		String newsHeading = Controller.INSTANCE.getNewsHeading(object);
+		String newsContent = Controller.INSTANCE.getNewsContent(object);
+		
+		try {
+			IViewPart view = workbench.getActiveWorkbenchWindow().getActivePage().showView(NewsContentView.ID);
+			IEditableView newsContentView = (IEditableView)view;
+			newsContentView.setTextContent(newsContent);
+			newsContentView.setName(newsHeading);
+		} catch (PartInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	private void createTable(Composite parent){
 		viewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
 		viewer.getTable().setLinesVisible(true);
