@@ -47,7 +47,7 @@ public class FileDAOImpl implements FileDao {
 	public void upload() {
 		String filename = "News.out";
 		Path path = Paths.get(filename); 
-		List<News> oldNews = null;
+		List<News> oldNews = new ArrayList<News>();
 		try {
 			final InputStream in = Files.newInputStream(path); 
 			ObjectInputStream objectInputStream = new ObjectInputStream(in);
@@ -68,8 +68,8 @@ public class FileDAOImpl implements FileDao {
 
 	private List<News> combine(List<News> oldNews, List<News> newNews) {
 		List<News> newsList = new ArrayList<News>();
-		newsList.addAll(oldNews);
-		for (News news : newsList) {
+		newsList.addAll(oldNews); 
+		for (News news : newNews) {
 			if(!oldNews.contains(news)){
 				newsList.add(news);
 			}

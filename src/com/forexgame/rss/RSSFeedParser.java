@@ -70,8 +70,6 @@ public class RSSFeedParser {
 
 	private void handleEventElement(XMLEvent event, XMLEventReader eventReader, List<Feed> feeds) {
 		// Set header values intial to the empty string
-		EndElement endElement;
-		Characters characters;
         StartElement startElement = event.asStartElement();
 		QName name = startElement.getName();
 		String localPart = name.getLocalPart();
@@ -79,34 +77,44 @@ public class RSSFeedParser {
 		
 		try{
 			if(localPart.equals(ITEM)){
-				handleEvents(eventReader, feeds);
-			} else {
+				event = eventReader.nextEvent();
+				localPart = getLocalPart(event);
 				while(localPart != ITEM && eventReader.hasNext()) {
 					if(event.isStartElement()){
 				        handleProperties(event, eventReader, feed);
 					} 
 					
 			        event = eventReader.nextEvent();
-			        if(event.isStartElement()){
-			        	startElement = event.asStartElement();
-					    name = startElement.getName();
-						localPart = name.getLocalPart();
-			        } else if(event.isEndElement()){
-			        	endElement = event.asEndElement();
-					    name = endElement.getName();
-						localPart = name.getLocalPart();
-			        } else {
-			        	characters = event.asCharacters();
-			        	localPart = characters.toString();
-			        }
+			        localPart = getLocalPart(event);
 				}
 				feeds.add(feed);
-				handleEvents(eventReader, feeds);
 			}
+			handleEvents(eventReader, feeds);
 		} catch (XMLStreamException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	private String getLocalPart(XMLEvent event) {
+		EndElement endElement;
+		Characters characters;
+		StartElement startElement;
+		QName name;
+		String localPart;
+		if(event.isStartElement()){
+			startElement = event.asStartElement();
+		    name = startElement.getName();
+			localPart = name.getLocalPart();
+		} else if(event.isEndElement()){
+			endElement = event.asEndElement();
+		    name = endElement.getName();
+			localPart = name.getLocalPart();
+		} else {
+			characters = event.asCharacters();
+			localPart = characters.toString();
+		}
+		return localPart;
 	}
 
 	private void handleProperties(XMLEvent event, XMLEventReader eventReader, Feed feed) throws XMLStreamException  {
