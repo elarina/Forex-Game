@@ -113,7 +113,9 @@ public class NewsView extends ViewPart {
 			IWorkbenchPartReference activePartReference = activePage.getActivePartReference();
 			if(activePartReference != null) {
 				activePage.setPartState(activePartReference, IWorkbenchPage.STATE_MAXIMIZED);
-			}
+			}			
+			view.setFocus();
+			
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -218,8 +220,7 @@ public class NewsView extends ViewPart {
 
 	@Override
 	public void setFocus() {
-		// TODO Auto-generated method stub
-
+		viewer.getTable().setFocus();
 	}
 
 }

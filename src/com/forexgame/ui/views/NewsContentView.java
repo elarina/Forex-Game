@@ -5,6 +5,7 @@ import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPartReference;
@@ -32,8 +33,7 @@ public class NewsContentView extends ViewPart implements IEditableView {
 
 	@Override
 	public void setFocus() {
-		// TODO Auto-generated method stub
-
+		browser.setFocus();
 	}
 	
 	@Override
@@ -43,6 +43,13 @@ public class NewsContentView extends ViewPart implements IEditableView {
 		IWorkbenchPartReference activePartReference = activePage.getActivePartReference();
 		if(activePartReference != null ) {
 			activePage.setPartState(activePartReference, IWorkbenchPage.STATE_RESTORED);
+		}
+
+		for (IViewReference viewReference: activePage.getViewReferences()) {
+			String id = viewReference.getId();
+			if(id.equals(NewsView.ID)){
+				viewReference.getView(true).setFocus();
+			}
 		}
 	}
 	
