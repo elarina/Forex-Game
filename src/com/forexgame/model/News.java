@@ -9,6 +9,7 @@ public class News implements Serializable{
 	private String date;
 	private String author;
 	private String link;
+	private boolean isRead;
 		
 	public News(){
 		
@@ -52,6 +53,14 @@ public class News implements Serializable{
 	}
 	public void setLink(String link) {
 		this.link = link;
+	}
+	
+	public boolean isRead() {
+		return isRead;
+	}
+
+	public void setRead(boolean isRead) {
+		this.isRead = isRead;
 	}
 
 	@Override

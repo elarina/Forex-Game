@@ -2,6 +2,9 @@ package com.forexgame.ui.views;
 
 import java.util.List;
 
+import javax.swing.text.StyleConstants.FontConstants;
+
+import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -17,17 +20,22 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.DeviceData;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.IPerspectiveDescriptor;
-import org.eclipse.ui.IPerspectiveListener;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartReference;
+import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
@@ -55,7 +63,7 @@ public class NewsView extends ViewPart {
 	 }
 
 	private void addDoubleClickListener(IWorkbench workbench) {
-		viewer.addDoubleClickListener(new IDoubleClickListener() {
+		IDoubleClickListener doubleClickListener = new IDoubleClickListener() {
 			
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
@@ -65,7 +73,8 @@ public class NewsView extends ViewPart {
 				showNewsContentView(workbench, object);
 			}
 
-		});
+		};
+		viewer.addDoubleClickListener(doubleClickListener);
 	}
 
 	private void addKeyListener(IWorkbench workbench) {
@@ -91,6 +100,9 @@ public class NewsView extends ViewPart {
 	private void showNewsContentView(IWorkbench workbench, Object object) {
 		String newsHeading = Controller.INSTANCE.getNewsHeading(object);
 		String newsContent = Controller.INSTANCE.getNewsContent(object);
+		Controller.INSTANCE.setNewsRead(object, true);
+		int oldId = viewer.getTable().getSelectionIndex();
+		Controller.INSTANCE.save(object, oldId);
 		
 		try {
 			IWorkbenchPage activePage = workbench.getActiveWorkbenchWindow().getActivePage();
@@ -106,6 +118,7 @@ public class NewsView extends ViewPart {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		viewer.refresh();
 	}
 
 	private void createTable(Composite parent){
@@ -143,6 +156,8 @@ public class NewsView extends ViewPart {
 		layout.addColumnData(new ColumnWeightData(15, true));
 		layout.addColumnData(new ColumnWeightData(30, true));
 		viewer.getTable().setLayout(layout);
+		
+		final Device display = parent.getDisplay();
 
 		TableViewerColumn column = createTableViewerColumn(Messages.NewsView_Heading);
 		column.setLabelProvider(new ColumnLabelProvider(){
@@ -150,6 +165,12 @@ public class NewsView extends ViewPart {
 			public String getText(Object element) {
 				return Controller.INSTANCE.getNewsHeading(element);
 			}
+			
+			@Override
+			public Font getFont(Object element) {
+				return defineFont(display, element);
+			}
+
 		});
 		
 		column = createTableViewerColumn(Messages.NewsView_Author);
@@ -157,6 +178,11 @@ public class NewsView extends ViewPart {
 			@Override
 			public String getText(Object element) {
 				return Controller.INSTANCE.getNewsSource(element);
+			}
+			
+			@Override
+			public Font getFont(Object element) {
+				return defineFont(display, element);
 			}
 		});
 		
@@ -166,9 +192,22 @@ public class NewsView extends ViewPart {
 			public String getText(Object element) {
 				return Controller.INSTANCE.getNewsDate(element);
 			}
+			
+			@Override
+			public Font getFont(Object element) {
+				return defineFont(display, element);
+			}
 		});		
 	}
 
+	private Font defineFont(final Device display, Object element) {
+		boolean isRead = Controller.INSTANCE.isNewsRead(element);
+		Font font = viewer.getTable().getFont();
+		FontDescriptor boldFontDescriptor = FontDescriptor.createFrom(font).setStyle(SWT.BOLD);
+		FontDescriptor normalFontDescriptor = FontDescriptor.createFrom(font).setStyle(SWT.NORMAL);
+		return isRead ? normalFontDescriptor.createFont(display) : boldFontDescriptor.createFont(display) ;
+	}
+	
 	private TableViewerColumn createTableViewerColumn(String name) {
 		TableViewerColumn viewerColumn = new TableViewerColumn(viewer, SWT.CENTER);
 		TableColumn column = viewerColumn.getColumn();

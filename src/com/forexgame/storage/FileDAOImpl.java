@@ -1,13 +1,10 @@
 package com.forexgame.storage;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -29,13 +26,14 @@ public class FileDAOImpl implements FileDao {
 		List <News> news = newsStorage.getEntities();
 		try{
 			Path path = Paths.get("News.out");
+			Files.delete(path);
 			OutputStream outputStream = Files.newOutputStream(path, StandardOpenOption.CREATE);
-			ObjectOutputStream out = new ObjectOutputStream(
-					outputStream);
+			ObjectOutputStream out = null;
 			try{
+				out = new ObjectOutputStream(outputStream);
 				out.writeObject(news);
 			}finally {
-				out.close();
+				closeOutputStream(out);
 			}
 		}catch (IOException e){
 			e.printStackTrace(System.out);
@@ -48,8 +46,9 @@ public class FileDAOImpl implements FileDao {
 		String filename = "News.out";
 		Path path = Paths.get(filename); 
 		List<News> oldNews = new ArrayList<News>();
+		InputStream in = null;
 		try {
-			final InputStream in = Files.newInputStream(path); 
+			in = Files.newInputStream(path); 
 			ObjectInputStream objectInputStream = new ObjectInputStream(in);
 			oldNews = (ArrayList<News>) objectInputStream.readObject();
 		} catch (NoSuchFileException e) {
@@ -59,32 +58,67 @@ public class FileDAOImpl implements FileDao {
 			handleException(e);
 		} catch(ClassNotFoundException e ) {
 			handleException(e);
+		} finally {
+			closeInputStream(in);
 		}
 		
 		List<News> newNews = new ArrayList<News>();
 		newNews = NewsShaper.INSTANCE.shapeNews();
 		newsStorage.setEntities(combine(oldNews, newNews));
+		save();
+	}
+
+	private void closeInputStream(InputStream in) {
+		if(in == null) return;
+		try {
+			in.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private List<News> combine(List<News> oldNews, List<News> newNews) {
 		List<News> newsList = new ArrayList<News>();
-		newsList.addAll(newNews); 
-		for (News news : oldNews) {
-			if(!newNews.contains(news)){
-				newsList.add(news);
+		newsList.addAll(oldNews); 		
+		
+		List<News> temp = new ArrayList<News>();
+		temp.addAll(newNews);
+		outerloop:
+		for (News news : newNews) {
+			for (News old : oldNews) {
+				if(news.getHeading().equals(old.getHeading())){
+					temp.remove(news);
+					continue outerloop;
+				}
 			}
 		}
 		
+		newsList.addAll(temp);
 		return newsList;
 	}
 
 	private void createFile(Path path, String string) {
+		OutputStream out = null;
 		try {
-			Files.newOutputStream(path, StandardOpenOption.CREATE);
+			out = Files.newOutputStream(path, StandardOpenOption.CREATE);
 		} catch (IOException e1) {
 			e1.printStackTrace();
+		} finally {
+			closeOutputStream(out);
 		}
 		
+	}
+
+	private void closeOutputStream(OutputStream out) {
+		if(out != null) {
+			try {
+				out.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private void handleException(Exception e){

@@ -6,7 +6,6 @@ import java.util.List;
 import com.forexgame.model.News;
 import com.forexgame.rss.Feed;
 import com.forexgame.rss.RSSFeedParser;
-import com.forexgame.storage.FileDAOImpl;
 import com.forexgame.storage.GlobalStorage;
 
 public class NewsShaper {
@@ -63,7 +62,6 @@ public class NewsShaper {
 			}
 			
 			GlobalStorage.INSTANCE.getNewsStorage().setEntities(newsList);
-			FileDAOImpl.INSTANCE.save();
 			newsList.add(news);
 		}
 		

@@ -51,6 +51,10 @@ public class Controller {
 		return ((News)news).getContent();
 	}
 	
+	public boolean isNewsRead(Object news){
+		return ((News)news).isRead();
+	}
+	
 	public List<String> getSources(){
 		List<String> sources = new ArrayList<String>();
 		List<News> news = getNews();
@@ -85,5 +89,9 @@ public class Controller {
 		}
 		
 		FileDAOImpl.INSTANCE.save();
+	}
+
+	public void setNewsRead(Object news, boolean b) {
+		((News)news).setRead(b);
 	}
 }
