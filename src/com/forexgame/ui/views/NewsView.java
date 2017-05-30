@@ -21,8 +21,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.IPerspectiveDescriptor;
+import org.eclipse.ui.IPerspectiveListener;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
@@ -88,10 +93,15 @@ public class NewsView extends ViewPart {
 		String newsContent = Controller.INSTANCE.getNewsContent(object);
 		
 		try {
-			IViewPart view = workbench.getActiveWorkbenchWindow().getActivePage().showView(NewsContentView.ID);
+			IWorkbenchPage activePage = workbench.getActiveWorkbenchWindow().getActivePage();
+			IViewPart view = activePage.showView(NewsContentView.ID);
 			IEditableView newsContentView = (IEditableView)view;
 			newsContentView.setTextContent(newsContent);
 			newsContentView.setName(newsHeading);
+			IWorkbenchPartReference activePartReference = activePage.getActivePartReference();
+			if(activePartReference != null) {
+				activePage.setPartState(activePartReference, IWorkbenchPage.STATE_MAXIMIZED);
+			}
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
