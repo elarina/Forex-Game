@@ -9,6 +9,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.IElementComparer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -16,9 +17,12 @@ import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.DeviceData;
@@ -41,11 +45,15 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 import com.forexgame.controller.Controller;
+import com.forexgame.controller.NewsViewerComparator;
 
 public class NewsView extends ViewPart {
 
 	public static final String ID = NewsView.class.getCanonicalName();
 	private TableViewer viewer;
+
+	NewsViewerComparator comparator = new NewsViewerComparator();
+
 	
 	public NewsView() {
 		// TODO Auto-generated constructor stub
@@ -57,6 +65,8 @@ public class NewsView extends ViewPart {
 		Color whiteColor = workbench.getDisplay().getSystemColor(SWT.COLOR_WHITE);
 		parent.setBackground(whiteColor);
 		createTable(parent);
+		viewer.setComparator(comparator);
+				
 		viewer.setInput(Controller.INSTANCE.getNews());
 		addDoubleClickListener(workbench);
 		addKeyListener(workbench);
@@ -69,6 +79,7 @@ public class NewsView extends ViewPart {
 			public void doubleClick(DoubleClickEvent event) {
 				ISelection selection = event.getSelection();
 				if(!(selection instanceof StructuredSelection)) return;
+
 				Object object = ((StructuredSelection)selection).getFirstElement();
 				showNewsContentView(workbench, object);
 			}
@@ -84,9 +95,11 @@ public class NewsView extends ViewPart {
 			public void keyPressed(KeyEvent e) {
 				Table table = (Table)e.getSource();
 				TableItem[] selection = table.getSelection();
-				Object object = selection[0];
-				if(e.keyCode == SWT.LF){
-					showNewsContentView(workbench, object);
+				if(selection.length > 0) {
+					Object object = selection[0];
+					if(e.keyCode == SWT.LF){
+						showNewsContentView(workbench, object);
+					}
 				}
 			}
 			
@@ -161,7 +174,7 @@ public class NewsView extends ViewPart {
 		
 		final Device display = parent.getDisplay();
 
-		TableViewerColumn column = createTableViewerColumn(Messages.NewsView_Heading);
+		TableViewerColumn column = createTableViewerColumn(Messages.NewsView_Heading, 1);
 		column.setLabelProvider(new ColumnLabelProvider(){
 			@Override
 			public String getText(Object element) {
@@ -175,7 +188,7 @@ public class NewsView extends ViewPart {
 
 		});
 		
-		column = createTableViewerColumn(Messages.NewsView_Author);
+		column = createTableViewerColumn(Messages.NewsView_Author, 2);
 		column.setLabelProvider(new ColumnLabelProvider(){
 			@Override
 			public String getText(Object element) {
@@ -188,7 +201,7 @@ public class NewsView extends ViewPart {
 			}
 		});
 		
-		column = createTableViewerColumn(Messages.NewsView_Date);
+		column = createTableViewerColumn(Messages.NewsView_Date, 3);
 		column.setLabelProvider(new ColumnLabelProvider(){
 			@Override
 			public String getText(Object element) {
@@ -210,12 +223,28 @@ public class NewsView extends ViewPart {
 		return isRead ? normalFontDescriptor.createFont(display) : boldFontDescriptor.createFont(display) ;
 	}
 	
-	private TableViewerColumn createTableViewerColumn(String name) {
+	private TableViewerColumn createTableViewerColumn(String name, int index) {
 		TableViewerColumn viewerColumn = new TableViewerColumn(viewer, SWT.CENTER);
 		TableColumn column = viewerColumn.getColumn();
 		column.setText(name);
 		column.setMoveable(true);
+		column.addSelectionListener(getSelectionAdapter(index));
 		return viewerColumn;
+	}
+
+	private SelectionAdapter getSelectionAdapter(int index) {
+		return new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				comparator.setColumn(index);
+				int direction = comparator.getDirection();
+				viewer.getTable().setSortDirection(direction);
+				super.widgetSelected(e);
+				viewer.refresh();
+				TableItem[] items = viewer.getTable().getItems();
+				Controller.INSTANCE.saveNewsList(items);				
+			}
+		};
 	}
 
 	@Override

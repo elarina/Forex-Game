@@ -3,6 +3,8 @@ package com.forexgame.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.swt.widgets.TableItem;
+
 import com.forexgame.model.News;
 import com.forexgame.storage.FileDAOImpl;
 import com.forexgame.storage.GlobalStorage;
@@ -88,6 +90,16 @@ public class Controller {
 			newsStorage.getEntities().add((News)object);
 		}
 		
+		FileDAOImpl.INSTANCE.save();
+	}
+	
+	public void saveNewsList(TableItem[] items){
+		List<News> newsList = new ArrayList<News>();
+		for (TableItem item : items) {
+			News news = (News)item.getData();
+			newsList.add(news);
+		}
+		newsStorage.setEntities(newsList);
 		FileDAOImpl.INSTANCE.save();
 	}
 
