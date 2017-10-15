@@ -2,12 +2,16 @@ package com.forexgame.ui.views;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
@@ -29,6 +33,7 @@ public class NewsContentView extends ViewPart implements IEditableView {
 		browser = new Browser(parent, SWT.NONE);
 		FillLayout layout = new FillLayout();
 		browser.setLayoutData(layout);
+		addKeyListener();
 	}
 
 	@Override
@@ -61,5 +66,23 @@ public class NewsContentView extends ViewPart implements IEditableView {
 	@Override
 	public void setName(String name) {
 		setPartName(name);
+	}
+
+	private void addKeyListener(){
+		browser.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				// TODO Auto-generated method stub
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.keyCode == SWT.ESC){
+					IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+					activePage.hideView(activePage.findView(ID));
+				}
+			}
+		});
 	}
 }
