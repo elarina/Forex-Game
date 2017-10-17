@@ -2,14 +2,13 @@ package com.forexgame.ui.views;
 
 import java.util.List;
 
-import javax.swing.text.StyleConstants.FontConstants;
-
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewer;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.IElementComparer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -17,7 +16,6 @@ import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -25,34 +23,34 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
-import org.eclipse.swt.graphics.DeviceData;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPartReference;
-import org.eclipse.ui.IWorkbenchPartSite;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 import com.forexgame.controller.Controller;
 import com.forexgame.controller.NewsViewerComparator;
+import com.forexgame.model.News;
 
 public class NewsView extends ViewPart {
 
 	public static final String ID = NewsView.class.getCanonicalName();
 	private TableViewer viewer;
-
+	private Font boldFont;
+	
 	NewsViewerComparator comparator = new NewsViewerComparator();
+	private Font normalFont;
 
 	
 	public NewsView() {
@@ -64,13 +62,32 @@ public class NewsView extends ViewPart {
 		IWorkbench workbench = PlatformUI.getWorkbench();
 		Color whiteColor = workbench.getDisplay().getSystemColor(SWT.COLOR_WHITE);
 		parent.setBackground(whiteColor);
+
+		GridLayout layout = new GridLayout(1, true);
+		
+//		parent.setLayout(layout);
+//		
+//		Text filtering = new Text(parent, SWT.BORDER);
+//		
+//		GridData filteringLayoutData = new GridData(SWT.FILL);
+//		filteringLayoutData.heightHint = 14;
+
 		createTable(parent);
+		
+		Table table = viewer.getTable();
+//		GridData tableLayoutData = new GridData(SWT.FILL);
+//		table.setLayoutData(tableLayoutData );
 		viewer.setComparator(comparator);
-				
 		viewer.setInput(Controller.INSTANCE.getNews());
 		addDoubleClickListener(workbench);
 		addKeyListener(workbench);
 	 }
+	
+	@Override
+	public void dispose() {
+		super.dispose();
+		boldFont.dispose();
+	}
 
 	private void addDoubleClickListener(IWorkbench workbench) {
 		IDoubleClickListener doubleClickListener = new IDoubleClickListener() {
@@ -137,7 +154,7 @@ public class NewsView extends ViewPart {
 	}
 
 	private void createTable(Composite parent){
-		viewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
+		viewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
 		viewer.getTable().setLinesVisible(true);
 		viewer.getTable().setHeaderVisible(true);
 		
@@ -162,7 +179,7 @@ public class NewsView extends ViewPart {
 			}
 		});
 		
-		createColumns(parent);
+		createColumns(parent);		
 	}
 	
 	private void createColumns(Composite parent) {
@@ -173,6 +190,9 @@ public class NewsView extends ViewPart {
 		viewer.getTable().setLayout(layout);
 		
 		final Device display = parent.getDisplay();
+		normalFont = viewer.getTable().getFont();
+		FontDescriptor boldFontDescriptor = FontDescriptor.createFrom(normalFont).setStyle(SWT.BOLD);
+		boldFont = boldFontDescriptor.createFont(display) ;
 
 		TableViewerColumn column = createTableViewerColumn(Messages.NewsView_Heading, 1);
 		column.setLabelProvider(new ColumnLabelProvider(){
@@ -183,9 +203,8 @@ public class NewsView extends ViewPart {
 			
 			@Override
 			public Font getFont(Object element) {
-				return defineFont(display, element);
+				return defineFont(element);
 			}
-
 		});
 		
 		column = createTableViewerColumn(Messages.NewsView_Author, 2);
@@ -197,7 +216,7 @@ public class NewsView extends ViewPart {
 			
 			@Override
 			public Font getFont(Object element) {
-				return defineFont(display, element);
+				return defineFont(element);
 			}
 		});
 		
@@ -210,17 +229,14 @@ public class NewsView extends ViewPart {
 			
 			@Override
 			public Font getFont(Object element) {
-				return defineFont(display, element);
+				return defineFont(element);
 			}
 		});		
 	}
 
-	private Font defineFont(final Device display, Object element) {
+	private Font defineFont(Object element) {
 		boolean isRead = Controller.INSTANCE.isNewsRead(element);
-		Font font = viewer.getTable().getFont();
-		FontDescriptor boldFontDescriptor = FontDescriptor.createFrom(font).setStyle(SWT.BOLD);
-		FontDescriptor normalFontDescriptor = FontDescriptor.createFrom(font).setStyle(SWT.NORMAL);
-		return isRead ? normalFontDescriptor.createFont(display) : boldFontDescriptor.createFont(display) ;
+		return isRead ? normalFont : boldFont ;
 	}
 	
 	private TableViewerColumn createTableViewerColumn(String name, int index) {

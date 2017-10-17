@@ -20,6 +20,7 @@ public class NewsContentView extends ViewPart implements IEditableView {
 
 	public static final String ID = NewsContentView.class.getCanonicalName();
 	private Browser browser; 
+	private Color whiteColor;
 	
 	public NewsContentView() {
 
@@ -28,7 +29,7 @@ public class NewsContentView extends ViewPart implements IEditableView {
 	@Override
 	public void createPartControl(Composite parent) {
 		IWorkbench workbench = PlatformUI.getWorkbench();
-		Color whiteColor = workbench.getDisplay().getSystemColor(SWT.COLOR_WHITE);
+		whiteColor = workbench.getDisplay().getSystemColor(SWT.COLOR_WHITE);
 		parent.setBackground(whiteColor);
 		browser = new Browser(parent, SWT.NONE);
 		FillLayout layout = new FillLayout();
@@ -44,6 +45,8 @@ public class NewsContentView extends ViewPart implements IEditableView {
 	@Override
 	public void dispose() {
 		super.dispose();
+		browser.dispose();
+		whiteColor.dispose();
 		IWorkbenchPage activePage = this.getSite().getWorkbenchWindow().getActivePage();
 		IWorkbenchPartReference activePartReference = activePage.getActivePartReference();
 		if(activePartReference != null ) {
